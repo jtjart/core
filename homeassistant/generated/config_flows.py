@@ -207,7 +207,7 @@ FLOWS = {
         "elgato",
         "elkm1",
         "elmax",
-        "eltako_enocean",
+        "eltako_series14",
         "elvia",
         "emoncms",
         "emonitor",
