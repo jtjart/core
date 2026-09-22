@@ -1725,6 +1725,8 @@ CLAUDE.md @home-assistant/core
 /tests/components/smarla/ @explicatis @johannes-exp
 /homeassistant/components/smart_meter_texas/ @grahamwetzler
 /tests/components/smart_meter_texas/ @grahamwetzler
+/homeassistant/components/smart_technologies/ @jtjart
+/tests/components/smart_technologies/ @jtjart
 /homeassistant/components/smartthings/ @joostlek
 /tests/components/smartthings/ @joostlek
 /homeassistant/components/smarttub/ @mdz

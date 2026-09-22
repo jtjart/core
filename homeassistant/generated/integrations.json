@@ -6755,6 +6755,12 @@
       "integration_type": "virtual",
       "supported_by": "motion_blinds"
     },
+    "smart_technologies": {
+      "name": "SMART Technologies",
+      "integration_type": "device",
+      "config_flow": true,
+      "iot_class": "local_polling"
+    },
     "smarther": {
       "name": "Smarther",
       "integration_type": "virtual",

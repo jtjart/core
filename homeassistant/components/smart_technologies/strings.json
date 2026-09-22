@@ -1,0 +1,383 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]",
+      "reconfigure_successful": "[%key:common::config_flow::abort::reconfigure_successful%]",
+      "wrong_device": "The projector on this serial port is not the one that was set up. To add another projector, add it as a new device."
+    },
+    "error": {
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "device_idle": "The projector is in standby. Turn it on and try again.",
+      "invalid_response": "The projector answered, but not in the expected way. Check that it is a supported SMART projector.",
+      "no_response": "The serial port opened, but the projector did not answer. Check the cable and that the projector is turned on.",
+      "unknown": "[%key:common::config_flow::error::unknown%]"
+    },
+    "step": {
+      "reconfigure": {
+        "data": {
+          "device": "[%key:common::config_flow::data::port%]"
+        },
+        "data_description": {
+          "device": "Serial port of the projector's RS-232 connection. The projector must be turned on."
+        },
+        "description": "Select the serial port the same projector is now connected to.",
+        "title": "Change the serial port"
+      },
+      "user": {
+        "data": {
+          "device": "[%key:common::config_flow::data::port%]"
+        },
+        "data_description": {
+          "device": "Serial port the projector's RS-232 connector is attached to. The projector must be turned on for the initial connection."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "signal_detected": {
+        "name": "Signal detected"
+      }
+    },
+    "button": {
+      "power_off_low_power": {
+        "name": "Power off (low power)"
+      },
+      "power_off_now": {
+        "name": "Power off now"
+      },
+      "reset_lamp_hours": {
+        "name": "Reset lamp hours"
+      },
+      "restore_defaults": {
+        "name": "Restore defaults"
+      }
+    },
+    "number": {
+      "auto_power_off": {
+        "name": "Auto power off timer"
+      },
+      "blue": {
+        "name": "Blue"
+      },
+      "brightness": {
+        "name": "Brightness"
+      },
+      "contrast": {
+        "name": "Contrast"
+      },
+      "cyan": {
+        "name": "Cyan"
+      },
+      "degamma": {
+        "name": "Degamma"
+      },
+      "frequency": {
+        "name": "Frequency"
+      },
+      "green": {
+        "name": "Green"
+      },
+      "horizontal_position": {
+        "name": "Horizontal position"
+      },
+      "magenta": {
+        "name": "Magenta"
+      },
+      "projector_id": {
+        "name": "Projector ID"
+      },
+      "red": {
+        "name": "Red"
+      },
+      "saturation": {
+        "name": "Saturation"
+      },
+      "sharpness": {
+        "name": "Sharpness"
+      },
+      "tint": {
+        "name": "Tint"
+      },
+      "tracking": {
+        "name": "Tracking"
+      },
+      "vertical_position": {
+        "name": "Vertical position"
+      },
+      "white_peaking": {
+        "name": "White peaking"
+      },
+      "yellow": {
+        "name": "Yellow"
+      },
+      "zoom": {
+        "name": "Zoom"
+      }
+    },
+    "select": {
+      "aspect_ratio": {
+        "name": "Aspect ratio",
+        "state": {
+          "fill": "Fill",
+          "match": "Match",
+          "r16_9": "16:9"
+        }
+      },
+      "closed_captioning": {
+        "name": "Closed captioning",
+        "state": {
+          "cc1": "CC1",
+          "cc2": "CC2",
+          "off": "Off"
+        }
+      },
+      "display_mode": {
+        "name": "Display mode",
+        "state": {
+          "brightroom": "Bright room",
+          "darkroom": "Dark room",
+          "smartpresentation": "SMART presentation",
+          "srgb": "sRGB",
+          "user": "User"
+        }
+      },
+      "language": {
+        "name": "Language",
+        "state": {
+          "chinese_simplified": "Chinese (Simplified)",
+          "chinese_traditional": "Chinese (Traditional)",
+          "czech": "Czech",
+          "danish": "Danish",
+          "dutch": "Dutch",
+          "english": "English",
+          "finnish": "Finnish",
+          "french": "French",
+          "german": "German",
+          "greek": "Greek",
+          "italian": "Italian",
+          "japanese": "Japanese",
+          "korean": "Korean",
+          "norwegian": "Norwegian",
+          "polish": "Polish",
+          "portuguese_brazil": "Portuguese (Brazil)",
+          "portuguese_portugal": "Portuguese (Portugal)",
+          "russian": "Russian",
+          "spanish": "Spanish",
+          "swedish": "Swedish"
+        }
+      },
+      "projection_mode": {
+        "name": "Projection mode",
+        "state": {
+          "ceiling": "Ceiling",
+          "front": "Front",
+          "rear": "Rear",
+          "rear_ceiling": "Rear ceiling"
+        }
+      },
+      "startup_screen": {
+        "name": "Startup screen",
+        "state": {
+          "preview": "Preview",
+          "smart": "SMART",
+          "usercapture": "User capture"
+        }
+      },
+      "usb1_source": {
+        "name": "USB 1 source",
+        "state": {
+          "disabled": "Disabled"
+        }
+      },
+      "usb2_source": {
+        "name": "USB 2 source",
+        "state": {
+          "disabled": "Disabled"
+        }
+      }
+    },
+    "sensor": {
+      "esp_firmware_version": {
+        "name": "ESP firmware version"
+      },
+      "lamp_hours": {
+        "name": "Lamp hours"
+      },
+      "mac_address": {
+        "name": "MAC address"
+      },
+      "model_number": {
+        "name": "Model number"
+      },
+      "network_firmware_version": {
+        "name": "Network firmware version"
+      },
+      "network_status": {
+        "name": "Network status",
+        "state": {
+          "connected": "Connected",
+          "disabled": "Disabled",
+          "disconnected": "Disconnected"
+        }
+      },
+      "power_state": {
+        "name": "Power state",
+        "state": {
+          "confirm_off": "Waiting for confirmation",
+          "cooling": "Cooling down",
+          "idle": "Standby",
+          "on": "On",
+          "powering": "Powering on"
+        }
+      },
+      "processor_firmware_version": {
+        "name": "Processor firmware version"
+      },
+      "projector_firmware_version": {
+        "name": "Projector firmware version"
+      },
+      "resolution": {
+        "name": "Resolution"
+      },
+      "serial_number": {
+        "name": "Serial number"
+      },
+      "system_hours": {
+        "name": "System hours"
+      }
+    },
+    "switch": {
+      "auto_signal": {
+        "name": "Auto signal"
+      },
+      "dhcp": {
+        "name": "DHCP"
+      },
+      "high_brightness": {
+        "name": "High brightness"
+      },
+      "lamp_reminder": {
+        "name": "Lamp reminder"
+      },
+      "vga_out_and_network_enabled": {
+        "name": "VGA out and network"
+      },
+      "video_freeze": {
+        "name": "Video freeze"
+      },
+      "video_mute": {
+        "name": "Video mute"
+      },
+      "volume_control": {
+        "name": "Volume control"
+      }
+    },
+    "text": {
+      "contact_info": {
+        "name": "Contact information"
+      },
+      "gateway": {
+        "name": "Gateway"
+      },
+      "group_name": {
+        "name": "Group name"
+      },
+      "ip_address": {
+        "name": "IP address"
+      },
+      "location_info": {
+        "name": "Location information"
+      },
+      "primary_dns": {
+        "name": "Primary DNS"
+      },
+      "projector_name": {
+        "name": "Projector name"
+      },
+      "subnet_mask": {
+        "name": "Subnet mask"
+      }
+    }
+  },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "Could not open the serial port {port}: {error}"
+    },
+    "command_failed": {
+      "message": "Failed to send the command to the projector: {error}"
+    },
+    "command_rejected": {
+      "message": "The projector rejected the command: {error}"
+    },
+    "communication_error": {
+      "message": "Communication with the projector on {port} failed: {error}"
+    },
+    "device_idle": {
+      "message": "The projector is in standby and did not accept the command. Turn it on first."
+    },
+    "device_off": {
+      "message": "The projector is turned off. Turn it on first."
+    },
+    "invalid_source": {
+      "message": "\"{source}\" is not an input of this projector."
+    },
+    "invalid_value": {
+      "message": "Invalid value: {error}"
+    }
+  },
+  "issues": {
+    "cannot_communicate": {
+      "description": "Home Assistant has not been able to communicate with the projector on {port} for several minutes.\n\nCheck that:\n- the projector is connected to power (it does not need to be on),\n- the RS-232 cable and the USB adapter are firmly connected, and the cable is straight-through as described in the projector's guide,\n- the serial port has not changed. If it has, use **Reconfigure** on the integration to select the new port.\n\nHome Assistant reconnects automatically, and this issue disappears once the projector answers again.",
+      "title": "Cannot communicate with {title}"
+    }
+  },
+  "services": {
+    "adjust_value": {
+      "description": "Changes a setting of the projector by a relative amount, using the key from the SMART RS-232 command reference.",
+      "fields": {
+        "delta": {
+          "description": "How much to add to (positive) or subtract from (negative) the current value.",
+          "name": "Change"
+        },
+        "key": {
+          "description": "The setting to change, for example `brightness`.",
+          "name": "Key"
+        },
+        "source": {
+          "description": "Change the value for this currently inactive input, for example `vga1`, instead of the active input.",
+          "name": "Input"
+        }
+      },
+      "name": "Adjust value"
+    },
+    "get_value": {
+      "description": "Reads a setting from the projector using the key from the SMART RS-232 command reference, and returns it.",
+      "fields": {
+        "key": {
+          "description": "The setting to read, for example `frequency`.",
+          "name": "Key"
+        }
+      },
+      "name": "Get value"
+    },
+    "set_value": {
+      "description": "Sets a setting of the projector using the key from the SMART RS-232 command reference.",
+      "fields": {
+        "key": {
+          "description": "The setting to change, for example `brightness`.",
+          "name": "Key"
+        },
+        "source": {
+          "description": "Change the value for this currently inactive input, for example `vga1`, instead of the active input.",
+          "name": "Input"
+        },
+        "value": {
+          "description": "The new value, in the form the projector expects, for example `65` or `on`.",
+          "name": "Value"
+        }
+      },
+      "name": "Set value"
+    }
+  }
+}
