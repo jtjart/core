@@ -1,0 +1,218 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "signal_detected": {
+        "default": "mdi:video-input-component"
+      }
+    },
+    "button": {
+      "power_off_low_power": {
+        "default": "mdi:power-sleep"
+      },
+      "power_off_now": {
+        "default": "mdi:power"
+      },
+      "reset_lamp_hours": {
+        "default": "mdi:lightbulb-on-outline"
+      },
+      "restore_defaults": {
+        "default": "mdi:backup-restore"
+      }
+    },
+    "number": {
+      "auto_power_off": {
+        "default": "mdi:timer-off-outline"
+      },
+      "blue": {
+        "default": "mdi:palette"
+      },
+      "brightness": {
+        "default": "mdi:brightness-6"
+      },
+      "contrast": {
+        "default": "mdi:contrast-box"
+      },
+      "cyan": {
+        "default": "mdi:palette"
+      },
+      "degamma": {
+        "default": "mdi:gamma"
+      },
+      "frequency": {
+        "default": "mdi:sine-wave"
+      },
+      "green": {
+        "default": "mdi:palette"
+      },
+      "horizontal_position": {
+        "default": "mdi:arrow-left-right"
+      },
+      "magenta": {
+        "default": "mdi:palette"
+      },
+      "projector_id": {
+        "default": "mdi:identifier"
+      },
+      "red": {
+        "default": "mdi:palette"
+      },
+      "saturation": {
+        "default": "mdi:palette-swatch"
+      },
+      "sharpness": {
+        "default": "mdi:image-filter-center-focus"
+      },
+      "tint": {
+        "default": "mdi:invert-colors"
+      },
+      "tracking": {
+        "default": "mdi:arrow-expand-horizontal"
+      },
+      "vertical_position": {
+        "default": "mdi:arrow-up-down"
+      },
+      "white_peaking": {
+        "default": "mdi:white-balance-sunny"
+      },
+      "yellow": {
+        "default": "mdi:palette"
+      },
+      "zoom": {
+        "default": "mdi:magnify-plus-outline"
+      }
+    },
+    "select": {
+      "aspect_ratio": {
+        "default": "mdi:aspect-ratio"
+      },
+      "closed_captioning": {
+        "default": "mdi:closed-caption-outline"
+      },
+      "display_mode": {
+        "default": "mdi:monitor-eye"
+      },
+      "language": {
+        "default": "mdi:translate"
+      },
+      "projection_mode": {
+        "default": "mdi:projector"
+      },
+      "startup_screen": {
+        "default": "mdi:monitor-screenshot"
+      },
+      "usb1_source": {
+        "default": "mdi:usb-port"
+      },
+      "usb2_source": {
+        "default": "mdi:usb-port"
+      }
+    },
+    "sensor": {
+      "esp_firmware_version": {
+        "default": "mdi:chip"
+      },
+      "mac_address": {
+        "default": "mdi:ethernet"
+      },
+      "model_number": {
+        "default": "mdi:information-outline"
+      },
+      "network_firmware_version": {
+        "default": "mdi:chip"
+      },
+      "network_status": {
+        "default": "mdi:projector",
+        "state": {
+          "connected": "mdi:lan-connect",
+          "disabled": "mdi:lan-disconnect",
+          "disconnected": "mdi:lan-disconnect"
+        }
+      },
+      "power_state": {
+        "default": "mdi:projector",
+        "state": {
+          "confirm_off": "mdi:power-plug-off",
+          "cooling": "mdi:fan",
+          "idle": "mdi:power-sleep",
+          "on": "mdi:projector",
+          "powering": "mdi:power-cycle"
+        }
+      },
+      "processor_firmware_version": {
+        "default": "mdi:chip"
+      },
+      "projector_firmware_version": {
+        "default": "mdi:chip"
+      },
+      "resolution": {
+        "default": "mdi:image-size-select-large"
+      },
+      "serial_number": {
+        "default": "mdi:barcode"
+      }
+    },
+    "switch": {
+      "auto_signal": {
+        "default": "mdi:video-input-hdmi"
+      },
+      "dhcp": {
+        "default": "mdi:ip-network"
+      },
+      "high_brightness": {
+        "default": "mdi:brightness-7"
+      },
+      "lamp_reminder": {
+        "default": "mdi:lightbulb-alert-outline"
+      },
+      "vga_out_and_network_enabled": {
+        "default": "mdi:monitor-share"
+      },
+      "video_freeze": {
+        "default": "mdi:snowflake"
+      },
+      "video_mute": {
+        "default": "mdi:video-off"
+      },
+      "volume_control": {
+        "default": "mdi:volume-high"
+      }
+    },
+    "text": {
+      "contact_info": {
+        "default": "mdi:card-account-details-outline"
+      },
+      "gateway": {
+        "default": "mdi:router-network"
+      },
+      "group_name": {
+        "default": "mdi:account-group"
+      },
+      "ip_address": {
+        "default": "mdi:ip"
+      },
+      "location_info": {
+        "default": "mdi:map-marker"
+      },
+      "primary_dns": {
+        "default": "mdi:dns"
+      },
+      "projector_name": {
+        "default": "mdi:label-outline"
+      },
+      "subnet_mask": {
+        "default": "mdi:ip-network"
+      }
+    }
+  },
+  "services": {
+    "adjust_value": {
+      "service": "mdi:plus-minus-variant"
+    },
+    "get_value": {
+      "service": "mdi:code-braces"
+    },
+    "set_value": {
+      "service": "mdi:pencil"
+    }
+  }
+}

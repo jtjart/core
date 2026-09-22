@@ -1,0 +1,58 @@
+get_value:
+  target:
+    entity:
+      integration: smart_technologies
+      domain: media_player
+  fields:
+    key:
+      required: true
+      example: brightness
+      selector:
+        text:
+
+set_value:
+  target:
+    entity:
+      integration: smart_technologies
+      domain: media_player
+  fields:
+    key:
+      required: true
+      example: brightness
+      selector:
+        text:
+    value:
+      required: true
+      example: "65"
+      selector:
+        text:
+    source:
+      required: false
+      example: vga1
+      selector:
+        text:
+
+adjust_value:
+  target:
+    entity:
+      integration: smart_technologies
+      domain: media_player
+  fields:
+    key:
+      required: true
+      example: brightness
+      selector:
+        text:
+    delta:
+      required: true
+      example: -10
+      selector:
+        number:
+          min: -100
+          max: 100
+          mode: box
+    source:
+      required: false
+      example: vga1
+      selector:
+        text:
