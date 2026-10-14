@@ -50,9 +50,10 @@ class SmartTechnologiesEntity(CoordinatorEntity[SmartTechnologiesCoordinator]):
         """Return whether the entity can currently be read and controlled."""
         if not super().available:
             return False
-        return (
+        data = self.coordinator.data
+        return data.reachable and (
             not self.entity_description.requires_power
-            or self.coordinator.data.power_state is PowerState.ON
+            or data.power_state is PowerState.ON
         )
 
     def _tracked_settings(self) -> Sequence[TrackedSetting]:

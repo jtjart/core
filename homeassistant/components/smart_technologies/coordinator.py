@@ -8,7 +8,9 @@ from typing import Any, override
 
 from smart_serial import (
     CommandRejectedError,
+    ConnectionFailedError,
     ConnectionLostError,
+    ConnectionNotEstablishedError,
     DeviceIdleError,
     SerialTimeoutError,
     SmartSerialError,
@@ -42,6 +44,13 @@ type SettingAccessor = Callable[[SmartUX60], BoundReadOnlySetting[Any]]
 KEY_FIRMWARE = "projector_firmware_version"
 KEY_MAC_ADDRESS = "mac_address"
 
+UNREACHABLE_ERRORS = (
+    ConnectionFailedError,
+    ConnectionLostError,
+    ConnectionNotEstablishedError,
+    SerialTimeoutError,
+)
+
 
 @dataclass(frozen=True, kw_only=True)
 class TrackedSetting:
@@ -60,10 +69,14 @@ class SmartTechnologiesData:
     entity needs it, or when the projector could not give a value (for example a
     VGA-only setting while another input is active). ``None`` is a real value, such as
     a USB port routed to no input.
+
+    While the projector cannot be reached, ``reachable`` is ``False`` and the other
+    fields hold the last known state.
     """
 
     power_state: PowerState
     values: Mapping[str, Any]
+    reachable: bool = True
 
 
 class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData]):
@@ -93,6 +106,7 @@ class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData])
         self.device = SmartUX60.create(self.port)
 
         self._power_state: PowerState | None = None
+        self._reachable = True
         self._values: dict[str, Any] = {}
         self._tracked: dict[str, tuple[TrackedSetting, int]] = {}
         self._last_read: dict[str, float] = {}
@@ -197,30 +211,56 @@ class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData])
             except ConnectionLostError as err:
                 # A dropped link (for example the serial adapter was power-cycled) is
                 # only noticed when it is used. Reads are safe to repeat, so try once
-                # more on a fresh connection before reporting the projector unavailable.
+                # more on a fresh connection before treating the projector as gone.
                 LOGGER.debug("Connection to %s lost (%s), reconnecting", self.port, err)
                 power_state = await self._async_poll()
+        except UNREACHABLE_ERRORS as err:
+            return await self._async_unreachable(err)
         except SmartSerialError as err:
-            if isinstance(err, SerialTimeoutError):
-                # A TCP connection to an adapter that lost power stays "open" for
-                # minutes. Drop it so that the next update starts on a fresh one.
-                await self.device.disconnect()
-            raise UpdateFailed(
-                translation_domain=DOMAIN,
-                translation_key="communication_error",
-                translation_placeholders={"port": self.port, "error": str(err)},
-            ) from err
+            raise self._update_failed(err) from err
 
+        self._mark_reachable()
         self._power_state = power_state
         self._async_sync_device_registry()
         return self._snapshot(power_state)
+
+    async def _async_unreachable(self, err: SmartSerialError) -> SmartTechnologiesData:
+        """Mark the projector unavailable without treating that as an error."""
+        if isinstance(err, SerialTimeoutError):
+            # A TCP connection to an adapter that lost power stays "open" for
+            # minutes. Drop it so that the next update starts on a fresh one.
+            await self.device.disconnect()
+        if self._power_state is None:
+            # Nothing is known yet (first refresh): let Home Assistant retry the setup.
+            raise self._update_failed(err) from err
+        self._mark_unreachable(err)
+        return self._snapshot(self._power_state, reachable=False)
+
+    def _update_failed(self, err: SmartSerialError) -> UpdateFailed:
+        return UpdateFailed(
+            translation_domain=DOMAIN,
+            translation_key="communication_error",
+            translation_placeholders={"port": self.port, "error": str(err)},
+        )
+
+    def _mark_reachable(self) -> None:
+        """Log once that the projector can be reached again."""
+        if not self._reachable:
+            self._reachable = True
+            LOGGER.info("The projector on %s is reachable again", self.port)
+
+    def _mark_unreachable(self, err: SmartSerialError) -> None:
+        """Log once that the projector cannot be reached."""
+        if self._reachable:
+            self._reachable = False
+            LOGGER.info("The projector on %s is not reachable: %s", self.port, err)
 
     async def _async_poll(self) -> PowerState:
         """Read the power state and, while the projector is on, the due settings."""
         await self.device.connect()  # no-op while the port is open
         power_state = await self.device.get_power_state()
         if power_state is PowerState.ON:
-            if self._power_state is not PowerState.ON:
+            if self._power_state is not PowerState.ON or not self._reachable:
                 self._last_read.clear()
             await self._async_read_due_settings()
         return power_state
@@ -259,15 +299,21 @@ class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData])
                 self._values.pop(key, None)
             self._last_read[key] = now
 
-    def _snapshot(self, power_state: PowerState) -> SmartTechnologiesData:
+    def _snapshot(
+        self, power_state: PowerState, *, reachable: bool = True
+    ) -> SmartTechnologiesData:
         return SmartTechnologiesData(
-            power_state=power_state, values=MappingProxyType(dict(self._values))
+            power_state=power_state,
+            values=MappingProxyType(dict(self._values)),
+            reachable=reachable,
         )
 
     @callback
     def _async_publish(self) -> None:
         """Push locally known values to the entities without polling."""
         if self._power_state is not None:
+            # The projector has just answered a command, so it is reachable.
+            self._mark_reachable()
             self.async_set_updated_data(self._snapshot(self._power_state))
 
     def _mac_connection(self) -> tuple[str, str] | None:
