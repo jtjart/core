@@ -326,12 +326,6 @@
       "message": "Invalid value: {error}"
     }
   },
-  "issues": {
-    "cannot_communicate": {
-      "description": "Home Assistant has not been able to communicate with the projector on {port} for several minutes.\n\nCheck that:\n- the projector is connected to power (it does not need to be on),\n- the RS-232 cable and the USB adapter are firmly connected, and the cable is straight-through as described in the projector's guide,\n- the serial port has not changed. If it has, use **Reconfigure** on the integration to select the new port.\n\nHome Assistant reconnects automatically, and this issue disappears once the projector answers again.",
-      "title": "Cannot communicate with {title}"
-    }
-  },
   "services": {
     "adjust_value": {
       "description": "Changes a setting of the projector by a relative amount, using the key from the SMART RS-232 command reference.",

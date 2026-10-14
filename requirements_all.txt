@@ -3118,7 +3118,7 @@ slixmpp==1.17.0
 smart-meter-texas==0.5.6
 
 # homeassistant.components.smart_technologies
-smart-serial==0.3.0
+smart-serial==0.3.1
 
 # homeassistant.components.snapcast
 snapcast==2.3.8

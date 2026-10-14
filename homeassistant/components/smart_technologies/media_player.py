@@ -164,10 +164,9 @@ class SmartTechnologiesMediaPlayer(SmartTechnologiesEntity, MediaPlayerEntity):
 
     @override
     async def async_turn_off(self) -> None:
-        """Turn the projector off, confirming the shutdown prompt if needed."""
+        """Turn the projector off."""
         device = self.coordinator.device
-        await self._async_command(device.turn_off)
-        state = await self._async_command(device.get_power_state)
+        state = await self._async_command(device.turn_off)
         self.coordinator.async_set_power_state(state)
 
     @override

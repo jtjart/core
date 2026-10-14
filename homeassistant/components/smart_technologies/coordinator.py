@@ -8,7 +8,9 @@ from typing import Any, override
 
 from smart_serial import (
     CommandRejectedError,
+    ConnectionLostError,
     DeviceIdleError,
+    SerialTimeoutError,
     SmartSerialError,
     SmartUX60,
     UnexpectedResponseError,
@@ -20,7 +22,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_DEVICE
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import device_registry as dr, issue_registry as ir
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -28,8 +30,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .const import (
     DOMAIN,
     INTERVAL_SLACK,
-    ISSUE_CANNOT_COMMUNICATE,
-    ISSUE_THRESHOLD,
     LOGGER,
     REFRESH_COOLDOWN,
     SLOW_INTERVAL,
@@ -96,7 +96,6 @@ class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData])
         self._values: dict[str, Any] = {}
         self._tracked: dict[str, tuple[TrackedSetting, int]] = {}
         self._last_read: dict[str, float] = {}
-        self._failures = 0
 
         # Needed for the device registry entry, whether or not an entity shows them.
         self.async_track_setting(
@@ -188,25 +187,24 @@ class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData])
                 translation_placeholders={"port": self.port, "error": str(err)},
             ) from err
         self.config_entry.async_on_unload(self.device.disconnect)
-        self.config_entry.async_on_unload(self._async_delete_issue)
 
     @override
     async def _async_update_data(self) -> SmartTechnologiesData:
         """Read the power state and whichever settings are due."""
         try:
-            if not self.device.is_connected:
-                await self.device.connect()
-            power_state = await self.device.get_power_state()
-            if power_state is PowerState.ON:
-                if self._power_state is not PowerState.ON:
-                    # Settings may have been changed with the remote while the
-                    # projector was off or unreachable.
-                    self._last_read.clear()
-                await self._async_read_due_settings()
+            try:
+                power_state = await self._async_poll()
+            except ConnectionLostError as err:
+                # A dropped link (for example the serial adapter was power-cycled) is
+                # only noticed when it is used. Reads are safe to repeat, so try once
+                # more on a fresh connection before reporting the projector unavailable.
+                LOGGER.debug("Connection to %s lost (%s), reconnecting", self.port, err)
+                power_state = await self._async_poll()
         except SmartSerialError as err:
-            self._failures += 1
-            if self._failures == ISSUE_THRESHOLD:
-                self._async_create_issue()
+            if isinstance(err, SerialTimeoutError):
+                # A TCP connection to an adapter that lost power stays "open" for
+                # minutes. Drop it so that the next update starts on a fresh one.
+                await self.device.disconnect()
             raise UpdateFailed(
                 translation_domain=DOMAIN,
                 translation_key="communication_error",
@@ -214,11 +212,18 @@ class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData])
             ) from err
 
         self._power_state = power_state
-        if self._failures >= ISSUE_THRESHOLD:
-            self._async_delete_issue()
-        self._failures = 0
         self._async_sync_device_registry()
         return self._snapshot(power_state)
+
+    async def _async_poll(self) -> PowerState:
+        """Read the power state and, while the projector is on, the due settings."""
+        await self.device.connect()  # no-op while the port is open
+        power_state = await self.device.get_power_state()
+        if power_state is PowerState.ON:
+            if self._power_state is not PowerState.ON:
+                self._last_read.clear()
+            await self._async_read_due_settings()
+        return power_state
 
     async def _async_read_due_settings(self) -> None:
         """Read every tracked setting whose polling interval has elapsed."""
@@ -236,6 +241,16 @@ class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData])
                 # The projector went idle mid-update: keep what we know and let
                 # the next update report the new power state.
                 LOGGER.debug("Projector went idle while reading %s", key)
+                return
+            except SerialTimeoutError as err:
+                # The power state was read a moment ago, so a projector that falls
+                # silent now is most likely changing state (for example shutting
+                # down). Keep what we know and stop here instead of waiting for every
+                # remaining setting: the next update's power state read decides
+                # whether the projector is still reachable. Retry this setting after
+                # its normal interval so that it cannot hold up the others.
+                LOGGER.debug("No answer while reading %s: %s", key, err)
+                self._last_read[key] = now
                 return
             except (CommandRejectedError, UnexpectedResponseError) as err:
                 # Some settings only apply to certain inputs, so a refusal is
@@ -278,26 +293,3 @@ class SmartTechnologiesCoordinator(DataUpdateCoordinator[SmartTechnologiesData])
             registry.async_update_device(device.id, sw_version=firmware)
         if connection and connection not in device.connections:
             registry.async_update_device(device.id, new_connections={connection})
-
-    @callback
-    def _async_create_issue(self) -> None:
-        ir.async_create_issue(
-            self.hass,
-            DOMAIN,
-            f"{ISSUE_CANNOT_COMMUNICATE}_{self.config_entry.entry_id}",
-            is_fixable=False,
-            severity=ir.IssueSeverity.WARNING,
-            translation_key=ISSUE_CANNOT_COMMUNICATE,
-            translation_placeholders={
-                "title": self.config_entry.title,
-                "port": self.port,
-            },
-        )
-
-    @callback
-    def _async_delete_issue(self) -> None:
-        ir.async_delete_issue(
-            self.hass,
-            DOMAIN,
-            f"{ISSUE_CANNOT_COMMUNICATE}_{self.config_entry.entry_id}",
-        )

@@ -80,6 +80,7 @@ class SmartTechnologiesEntity(CoordinatorEntity[SmartTechnologiesCoordinator]):
     async def _async_command[_T](self, call: Callable[[], Awaitable[_T]]) -> _T:
         """Run a library call, translating its errors for the user."""
         try:
+            await self.coordinator.device.connect()
             return await call()
         except ValueError as err:
             raise ServiceValidationError(

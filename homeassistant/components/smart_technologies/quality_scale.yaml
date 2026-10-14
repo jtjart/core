@@ -67,7 +67,9 @@ rules:
   exception-translations: done
   icon-translations: done
   reconfiguration-flow: done
-  repair-issues: done
+  repair-issues:
+    status: exempt
+    comment: The integration raises no issues.
   stale-devices:
     status: exempt
     comment: Each config entry is a single projector, so a device can never become stale.

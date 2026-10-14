@@ -28,10 +28,6 @@ INTERVAL_SLACK = 2.0
 # How long to wait for further entities to register before reading newly needed settings.
 REFRESH_COOLDOWN = 1.0
 
-# Consecutive failed updates (about five minutes) before a repair issue is raised.
-ISSUE_THRESHOLD = 10
-ISSUE_CANNOT_COMMUNICATE = "cannot_communicate"
-
 
 def enum_option(member: StrEnum) -> str:
     """Return the translatable option key for a library enum member."""

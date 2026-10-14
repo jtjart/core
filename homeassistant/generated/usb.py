@@ -220,6 +220,7 @@ USB_DEPENDENTS = [
     "route_b_smart_meter",
     "russound_rio",
     "samsung_exlink",
+    "smart_technologies",
     "sofar",
     "solaredge_modbus",
     "teleinfo",
